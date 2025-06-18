@@ -6,17 +6,31 @@
       <!-- Tài khoản -->
       <div class="input-control">
         <label for="username">Tài khoản</label>
-        <input type="text" id="username" name="username" [(ngModel)]="username" required />
+        <input type="text" id="username" name="username" [(ngModel)]="username" required placeholder="Nhập tài khoản"/>
         <div class="error" *ngIf="submitted && !username">Tài khoản không được để trống</div> 
         <!-- Kiểm tra thử username xem có rỗng không !username -->
       </div>
 
       <!-- Mật khẩu -->
-      <div class="input-control">
+      <div class="input-control" style="position: relative;">
         <label for="password">Mật khẩu</label>
-        <input id="password" name="password" type="password" [(ngModel)]="password" required />
+        <input
+          id="password"
+          name="password"
+          [type]="showPassword ? 'text' : 'password'"
+          placeholder="Nhập mật khẩu"
+          [(ngModel)]="password"
+          required
+          style="padding-right: 40px;"
+        />
+        <ion-icon
+          name="{{ showPassword ? 'eye-off' : 'eye' }}"
+          style="position: absolute; right: 10px; top: 38px; font-size: 20px; cursor: pointer;"
+          (click)="togglePasswordVisibility()"
+        ></ion-icon>
         <div class="error" *ngIf="submitted && !password">Mật khẩu không được để trống</div>
       </div>
+
 
       <!-- Nút Đăng nhập -->
       <div class="signup-button">

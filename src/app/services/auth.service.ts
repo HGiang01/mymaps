@@ -1,42 +1,36 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, tap } from 'rxjs';
+import { Router } from '@angular/router';
+import { AlertController } from '@ionic/angular';
 
-// Khởi tạo ứng dụng
 @Injectable({
   providedIn: 'root',
 })
-
 export class AuthService {
   private apiUrl = 'https://mymaps-app.onrender.com/';
-
-  //Trạng thái đăng nhập của loggedIn sẽ là false từ ban đầu khi chưa đăng nhập
   private loggedIn = new BehaviorSubject<boolean>(false);
-
-  //Cho phép các component bên ngoài subcrise
   isLoggedIn$ = this.loggedIn.asObservable();
 
-  //Lưu biến username
   private username = new BehaviorSubject<string | null>(null);
   username$ = this.username.asObservable();
 
-  //Cho phép các component bên ngoài subcrise
   private userId = new BehaviorSubject<string | null>(null);
   userId$ = this.userId.asObservable();
 
-  //Lưu biến avatar vào localstorage
   private avatarUrlSubject = new BehaviorSubject<string | null>(localStorage.getItem('user_avatar'));
   avatarUrl$ = this.avatarUrlSubject.asObservable();
 
-  //Khởi tạo khi vừa thực hiện
-  constructor(private http: HttpClient) {
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private alertController: AlertController
+  ) {
     const savedLogin = localStorage.getItem('loggedIn') === 'true';
     this.loggedIn.next(savedLogin);
-
-    this.initializeUserInfo(); // Load thông tin khi service khởi tạo
+    this.initializeUserInfo();
   }
 
-  //Lấy thông tin từ localStorage
   initializeUserInfo(): void {
     const savedUserId = localStorage.getItem('userId');
     const savedUsername = localStorage.getItem('username');
@@ -47,7 +41,6 @@ export class AuthService {
     if (savedAvatar) this.avatarUrlSubject.next(savedAvatar);
   }
 
-  //Cập nhật avatar
   setAvatarUrl(url: string | null): void {
     if (url) {
       localStorage.setItem('user_avatar', url);
@@ -56,7 +49,6 @@ export class AuthService {
     }
     this.avatarUrlSubject.next(url);
   }
-
 
   getIsLoggedIn(): boolean {
     return this.loggedIn.value;
@@ -70,7 +62,6 @@ export class AuthService {
     return this.userId.value;
   }
 
-  //Lưu thông tin người dùng
   setUserInfo(userId: string, username: string): void {
     this.userId.next(userId);
     this.username.next(username);
@@ -78,7 +69,6 @@ export class AuthService {
     localStorage.setItem('username', username);
   }
 
-  //Làm mới thông tin người dùng từ LocalStorage
   refreshUserInfoFromStorage(): void {
     const userId = localStorage.getItem('userId') || '';
     const username = localStorage.getItem('username') || '';
@@ -88,7 +78,6 @@ export class AuthService {
     this.setAvatarUrl(avatar);
   }
 
-  //Gửi thông tin đăng ký
   register(data: { username: string; email: string; password: string }): Observable<any> {
     const body = new URLSearchParams();
     body.set('user_name', data.username);
@@ -103,7 +92,6 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}user/signin`, body.toString(), { headers });
   }
 
-  //Gửi thông tin đăng nhập
   login(credentials: { username: string; password: string }): Observable<any> {
     const body = new URLSearchParams();
     body.set('username', credentials.username);
@@ -121,7 +109,6 @@ export class AuthService {
           localStorage.setItem('access_token', response.access_token);
           this.loggedIn.next(true);
 
-          // Gọi API /users/me để lấy thông tin người dùng chi tiết
           const authHeaders = new HttpHeaders({
             'Authorization': `Bearer ${response.access_token}`,
             'Accept': 'application/json'
@@ -138,8 +125,18 @@ export class AuthService {
               this.setUserInfo(res.user_id, res.username);
               this.setAvatarUrl(res.avatar || null);
             },
-            error: (err) => {
+            error: async (err) => {
               console.error('Lỗi khi gọi /users/me:', err);
+              if (err.status === 401) {
+                const alert = await this.alertController.create({
+                  header: 'Phiên đăng nhập hết hạn',
+                  message: 'Vui lòng đăng nhập lại để tiếp tục sử dụng.',
+                  buttons: ['OK']
+                });
+                await alert.present();
+                this.logout();
+                this.router.navigate(['/login']);
+              }
             }
           });
         }
@@ -147,25 +144,27 @@ export class AuthService {
     );
   }
 
-
-  //Đăng xuất và xóa thông tin khỏi localStorage
   logout(): void {
-  // Xóa tất cả các key liên quan
-  localStorage.removeItem('loggedIn');
-  localStorage.removeItem('username');
-  localStorage.removeItem('access_token');
-  localStorage.removeItem('userId');
-  localStorage.removeItem('user_avatar');
-  localStorage.removeItem('user_email');
-  localStorage.removeItem('user_phone');
-  localStorage.removeItem('displayName');
+    const hasSeenIntro = localStorage.getItem('hasSeenIntro');
 
-  // Reset các BehaviorSubject về null/false
-  this.loggedIn.next(false);
-  this.username.next(null);
-  this.userId.next(null);
-  this.avatarUrlSubject.next(null);
-}
+    localStorage.removeItem('loggedIn');
+    localStorage.removeItem('username');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('user_avatar');
+    localStorage.removeItem('user_email');
+    localStorage.removeItem('user_phone');
+    localStorage.removeItem('displayName');
+
+    if (hasSeenIntro) {
+      localStorage.setItem('hasSeenIntro', hasSeenIntro);
+    }
+
+    this.loggedIn.next(false);
+    this.username.next(null);
+    this.userId.next(null);
+    this.avatarUrlSubject.next(null);
+  }
 
   getAccessToken(): string | null {
     return localStorage.getItem('access_token');
@@ -179,13 +178,11 @@ export class AuthService {
     });
   }
 
-  // Cập nhật trạng thái Login
   setLoginStatus(status: boolean): void {
     this.loggedIn.next(status);
     localStorage.setItem('loggedIn', status.toString());
   }
 
-  // Cập nhật trạng thái username
   setUsername(username: string | null): void {
     this.username.next(username);
     if (username) {

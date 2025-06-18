@@ -1,5 +1,5 @@
 import { Component, ViewChild, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { Platform,  AlertController,  IonRouterOutlet, MenuController} from '@ionic/angular';
+import { Platform, AlertController, IonRouterOutlet, MenuController } from '@ionic/angular';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { Location } from '@angular/common';
@@ -9,8 +9,11 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { register } from 'swiper/element/bundle';
+import { ModalController } from '@ionic/angular';
+import { ContactPage } from './pages/contact/contact.page';
 
 register();
+
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -23,6 +26,7 @@ export class AppComponent implements OnInit, OnDestroy {
   appPages: any[] = [];
   username: string | null = null;
   userId: string | null = null;
+  isModalOpen = false;
 
   private subscriptions: Subscription[] = [];
 
@@ -36,9 +40,21 @@ export class AppComponent implements OnInit, OnDestroy {
     private router: Router,
     private cdr: ChangeDetectorRef,
     private menu: MenuController,
+    private modalCtrl: ModalController,
   ) {
     this.initializeApp();
     this.backButtonEvent();
+  }
+
+  async presentContactModal() {
+    const modal = await this.modalCtrl.create({
+      component: ContactPage,
+    });
+    return await modal.present();
+  }
+
+  presentModal() {
+    this.isModalOpen = true;
   }
 
   initializeApp() {
@@ -64,7 +80,7 @@ export class AppComponent implements OnInit, OnDestroy {
     const alert = await this.alertController.create({
       message: 'Bạn muốn thoát khỏi ứng dụng?',
       buttons: [
-        { text: 'Cancel', role: 'cancel' },
+        { text: 'Hủy', role: 'cancel' },
         {
           text: 'Thoát',
           handler: () => {
@@ -90,7 +106,6 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // Lấy dữ liệu từ AuthService (Observable) và gán vào biến local
     this.subscriptions.push(
       this.authService.isLoggedIn$
         .pipe(distinctUntilChanged())
@@ -116,7 +131,6 @@ export class AppComponent implements OnInit, OnDestroy {
       })
     );
 
-    // Nếu user đang đăng nhập, lấy lại thông tin ban đầu từ localStorage
     if (this.authService.getIsLoggedIn()) {
       this.authService.refreshUserInfoFromStorage();
     }
@@ -141,6 +155,18 @@ export class AppComponent implements OnInit, OnDestroy {
     this.menu.close().then(() => {
       this.authService.logout();
       this.router.navigate(['/login']);
+    });
+  }
+
+  // Mở menu khi nhấn avatar
+  openMenu() {
+    this.menu.open('main-menu');
+  }
+
+  // Điều hướng đến About Us
+  navigateToAboutUs() {
+    this.menu.close().then(() => {
+      this.router.navigateByUrl('/about-us');
     });
   }
 }

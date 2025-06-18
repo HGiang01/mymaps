@@ -1,11 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { HttpErrorResponse } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, MenuController, ViewWillEnter, ViewWillLeave, IonSplitPane } from '@ionic/angular';
 
 @Component({
   selector: 'app-login',
@@ -16,62 +15,64 @@ import { IonicModule } from '@ionic/angular';
     CommonModule,
     FormsModule,
     RouterModule,
-    IonicModule,
+    IonicModule
   ],
 })
+export class LoginPage implements ViewWillEnter, ViewWillLeave {
+  @ViewChild(IonSplitPane, { static: true }) splitPane!: IonSplitPane;
 
-//Không dùng implement OnInit vì tài khoản chỉ đăng nhập rồi xài
-export class LoginPage {
-
-  // Khai báo kiểu dữ liệu
-  username: string = '';
-  password: string = '';
-  loginError: string = '';
+  showPassword: boolean = false;
+  username = '';
+  password = '';
+  loginError = '';
   submitted = false;
 
-  //Thực hiện lệnh khi được khởi tạo
   constructor(
-    private router: Router, // Thực hiện lệnh ở class mà gọi import
-    private authService: AuthService
+    private router: Router,
+    private authService: AuthService,
+    private menu: MenuController
   ) {}
 
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
+  }
 
-  //Nút nhấn đăng nhập
-  onSubmit() {
+  ionViewWillEnter(): void {
+    // Tắt menu logic — menu không mở được
+    this.menu.enable(false);
+    // Tắt split-pane layout
+    this.splitPane.disabled = true;
+  }
+
+  ionViewWillLeave(): void {
+    // Bật lại menu logic
+    this.menu.enable(true);
+    // Phục hồi split-pane layout
+    this.splitPane.disabled = false;
+  }
+
+  onSubmit(): void {
     this.submitted = true;
     this.loginError = '';
 
-    // Nếu thiếu 2 in 1 thì thông báo lỗi
     if (!this.username || !this.password) {
       this.loginError = 'Vui lòng nhập đầy đủ tài khoản và mật khẩu.';
       return;
     }
 
-    const loginData = {
-      username: this.username,
-      password: this.password
-    };
-
+    const loginData = { username: this.username, password: this.password };
     this.authService.login(loginData).subscribe({
       next: (res: any) => {
-        // Kiểm tra token
         if (res.access_token) {
-          alert('Đăng nhập thành công!');
-
-          // Lưu trạng thái login
           this.authService.setLoginStatus(true);
           this.authService.setUsername(this.username);
-
-          // Điều hướng
           this.router.navigate(['/tabs']);
         } else {
           this.loginError = 'Đăng nhập không thành công.';
         }
       },
-      error: (error: HttpErrorResponse) => {
-        console.error('Login failed:', error);
-        this.loginError = error.error?.detail || 'Tài khoản hoặc mật khẩu không đúng!';
-        alert(this.loginError);
+      error: () => {
+        this.loginError ='Tài khoản hoặc mật khẩu không đúng!';
       }
     });
   }

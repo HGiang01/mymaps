@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { AlertController, NavController, ToastController } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
-import { AboutUsComponent } from '../../about-us/about-us.component';
 
 @Component({
   selector: 'app-settings',
@@ -93,12 +92,5 @@ export class SettingsPage {
 
   editProfile() {
     this.navCtrl.navigateForward('/profile');
-  }
-
-  async openAboutUsModal() {
-    const modal = await this.modalCtrl.create({
-      component: AboutUsComponent
-    });
-    await modal.present();
   }
 }

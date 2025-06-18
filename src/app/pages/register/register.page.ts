@@ -20,6 +20,8 @@ export class RegisterPage {
   password2: string = '';
   submitted = false;
   registerError: string = '';
+  showPassword: boolean = false;
+  showPassword2: boolean = false;
 
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -27,7 +29,7 @@ export class RegisterPage {
   onSubmit() {
     this.submitted = true;
     this.registerError = '';
-
+    
     if (!this.username || !this.email || !this.password || !this.password2) {
       this.registerError = 'Vui lòng điền đầy đủ thông tin.';
       alert(this.registerError);
@@ -79,5 +81,13 @@ export class RegisterPage {
   isValidEmail(email: string): boolean {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email.toLowerCase());
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
+  }
+
+  togglePassword2Visibility() {
+    this.showPassword2 = !this.showPassword2;
   }
 }

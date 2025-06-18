@@ -1,0 +1,32 @@
+.menu-footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: inherit;
+  padding: 12px 0;
+}
+
+ion-menu ion-item:not(.user-info-item) {
+  --background-hover: rgba(0, 0, 0, 0.04);
+  transition: filter 0.2s ease;
+}
+
+ion-menu ion-item:not(.user-info-item):hover,
+ion-menu ion-item:not(.user-info-item).selected {
+  filter: brightness(0.95);
+  cursor: pointer;
+}
+
+/* Chỉ dời tất cả item ngoại trừ user-info */
+ion-menu ion-item:not(.user-info-item) {
+  padding-left: 5px;
+}
+
+/* Dời phần footer sang phải */
+.menu-footer {
+  padding-left: 5px;
+}
+
+ion-menu {
+  --width: 200px;
+}

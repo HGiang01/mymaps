@@ -1,30 +1,63 @@
 <div class="main-header">
   <ion-card>
     <form id="form" (ngSubmit)="onSubmit()" #form="ngForm">
-      <h1 class="form-title">Đăng ký tài khoản</h1>
+      <h1 class="form-title">Đăng ký</h1>
 
       <!-- [ngClass] giống class scss, [ngModel] dùng dữ liệu 2 chiều -->
+
+      <!-- Tạo tên người dùng -->
       <div class="input-control" [ngClass]="{ 'error': submitted && !username }">
         <label for="username">Tên người dùng</label>
-        <input id="username" name="username" type="text" [(ngModel)]="username" required />
+        <input id="username" name="username" type="text" [(ngModel)]="username" placeholder="Nhập tên người dùng của bạn" required />
         <div class="error" *ngIf="submitted && !username">Tên người dùng là bắt buộc</div>
       </div>
 
+      <!-- Nhập email -->
       <div class="input-control" [ngClass]="{ 'error': submitted && !isValidEmail(email) }">
         <label for="email">Email</label>
-        <input id="email" name="email" type="text" [(ngModel)]="email" required />
+        <input id="email" name="email" type="text" [(ngModel)]="email" placeholder="Nhập email của bạn" required />
         <div class="error" *ngIf="submitted && !isValidEmail(email)">Email không hợp lệ</div>
       </div>
 
+      <!-- Mật khẩu -->
       <div class="input-control" [ngClass]="{ 'error': submitted && password.length < 8 }">
         <label for="password">Mật khẩu</label>
-        <input id="password" name="password" type="password" [(ngModel)]="password" required />
+        <div style="position: relative;">
+          <input
+            id="password"
+            name="password"
+            [type]="showPassword ? 'text' : 'password'"
+            [(ngModel)]="password"
+            placeholder="Mật khẩu có ít nhất 8 ký tự"
+            required
+          />
+          <ion-icon
+            [name]="showPassword ? 'eye-off' : 'eye'"
+            (click)="togglePasswordVisibility()"
+            style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;"
+          ></ion-icon>
+        </div>
         <div class="error" *ngIf="submitted && password.length < 8">Mật khẩu phải có ít nhất 8 ký tự</div>
       </div>
 
+      <!-- Nhập lại mật khẩu -->
       <div class="input-control" [ngClass]="{ 'error': submitted && password !== password2 }">
         <label for="password2">Nhập lại mật khẩu</label>
-        <input id="password2" name="password2" type="password" [(ngModel)]="password2" required />
+        <div style="position: relative;">
+          <input
+            id="password2"
+            name="password2"
+            [type]="showPassword2 ? 'text' : 'password'"
+            [(ngModel)]="password2"
+            placeholder="Xác nhận lại mật khẩu"
+            required
+          />
+          <ion-icon
+            [name]="showPassword2 ? 'eye-off' : 'eye'"
+            (click)="togglePassword2Visibility()"
+            style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;"
+          ></ion-icon>
+        </div>
         <div class="error" *ngIf="submitted && password !== password2">Mật khẩu không trùng nhau</div>
       </div>
 
