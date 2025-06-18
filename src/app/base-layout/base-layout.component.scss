@@ -1,0 +1,38 @@
+.custom-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  img {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+}
+
+ion-toolbar {
+    --border-width: 0;
+    --box-shadow: none !important;
+    display: flex;
+    align-items: center;
+  }
+
+.custom-searchbar {
+    --border-radius: 20px;
+    --color: #000;
+    --placeholder-color: #666;
+    --icon-color: #666;
+    margin: 0 8px;
+  }
+

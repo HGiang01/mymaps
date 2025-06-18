@@ -1,0 +1,76 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Hồ sơ cá nhân</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Avatar -->
+  <div class="ion-text-center" style="margin-bottom: 20px;">
+    <ion-avatar class="avatar-preview" style="margin: auto; width: 120px; height: 120px;">
+      <img [src]="avatarPreview || user.avatar || 'assets/img/avatar.jpg'" alt="Avatar">
+    </ion-avatar>
+
+    <!-- Nút chọn ảnh khi chỉnh sửa -->
+    <ion-button *ngIf="isEditing" size="small" (click)="triggerFileInput()" style="margin-top: 10px;">
+      Chọn ảnh
+    </ion-button>
+
+    <!-- Input ẩn chọn ảnh -->
+    <input
+      #fileInput
+      type="file"
+      accept="image/*"
+      (change)="onFileSelected($event)"
+      hidden
+    />
+  </div>
+
+  <!-- Danh sách thông tin -->
+  <ion-list lines="full">
+    <!-- Tên người dùng -->
+    <ion-item>
+      <ion-label position="stacked">Tên người dùng</ion-label>
+      <ion-text>{{ user.displayName }}</ion-text>
+    </ion-item>
+
+    <!-- Tên hiển thị -->
+    <ion-item>
+      <ion-label position="stacked">Tên hiển thị</ion-label>
+      <ion-input
+        *ngIf="isEditing"
+        [(ngModel)]="user.username"
+        placeholder="Nhập tên"
+      ></ion-input>
+      <ion-text *ngIf="!isEditing">{{ user.username }}</ion-text>
+    </ion-item>
+
+    <!-- ID -->
+    <ion-item>
+      <ion-label position="stacked">ID người dùng</ion-label>
+      <ion-text>{{ user.id }}</ion-text>
+    </ion-item>
+
+    <!-- Email -->
+    <ion-item>
+      <ion-label position="stacked">Email</ion-label>
+      <ion-input
+        *ngIf="isEditing"
+        [(ngModel)]="user.email"
+        type="email"
+        placeholder="Nhập email"
+      ></ion-input>
+      <ion-text *ngIf="!isEditing">{{ user.email }}</ion-text>
+    </ion-item>
+  </ion-list>
+
+  <!-- Nút lưu / chỉnh sửa -->
+  <div class="ion-padding" style="text-align: center;">
+    <ion-button expand="block" (click)="toggleEdit()">
+      {{ isEditing ? 'Lưu' : 'Chỉnh sửa' }}
+    </ion-button>
+  </div>
+</ion-content>

@@ -1,0 +1,81 @@
+ion-searchbar {
+    --background: rgb(255, 255, 255);
+    --color: black; 
+    --border-radius: 20px;
+    background-color: rgb(239, 240, 222);
+    height: 50px;
+    flex: 1;
+    margin-left: 8px;
+}
+
+ion-header {
+    height: auto;
+    background: rgb(239, 240, 222);
+    padding: 8px;
+    position: relative;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+}
+
+.menu-avatar {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    flex-shrink: 0;
+    
+    img {
+        border: 2px solid white;
+    }
+}
+
+app-file-card {
+    --background: rgb(239, 240, 222);
+}
+
+.suggestions-list {
+    margin: 0;
+    background: rgb(239, 240, 222);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin: 8px;
+
+    ion-item {
+        --background: rgb(239, 240, 222);
+        --padding-start: 16px;
+        --padding-end: 16px;
+
+        ion-icon {
+            color: rgb(0, 0, 0);
+            margin-right: 12px;
+        }
+
+        ion-label {
+            h2 {
+                color: rgb(0, 0, 0);
+                font-weight: 500;
+                margin-bottom: 4px;
+            }
+
+            p {
+                color: rgb(38, 38, 38);
+                font-size: 14px;
+            }
+        }
+    }
+}
+
+ion-content {
+    --background: rgb(235, 236, 228);
+}
+
+app-file-card {
+    margin: 15px;
+}
+
+.documents-grid-container p {
+    color: rgb(0, 0, 0);
+}

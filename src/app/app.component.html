@@ -1,3 +1,81 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+  <ion-split-pane when="false" contentId="main-content">
+
+    <!-- Menu bên trái -->
+    <ion-menu menuId="main-menu" contentId="main-content" type="overlay" (ionDidClose)="onMenuClosed()">
+      <ion-content class="menu-content">
+        <div class="menu-inner">
+          <ion-list id="inbox-list">
+
+            <!-- Thông tin người dùng -->
+          <ion-item lines="none" *ngIf="isLoggedIn" class="user-info-item">
+            <ion-avatar slot="start" (click)="openMenu()">
+              <img [src]="avatarUrl || 'assets/img/avatar.jpg'" alt="avatar">
+            </ion-avatar>
+            <ion-label>
+              <h2>{{ username }}</h2>
+            </ion-label>
+          </ion-item>
+
+
+            <!-- Danh sách các mục trong menu -->
+            <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages; trackBy: trackByFn">
+              <ion-item
+                *ngIf="p.title !== 'Đăng xuất'"
+                [routerLink]="[p.url]"
+                routerDirection="root"
+                lines="none"
+                detail="false"
+                routerLinkActive="selected"
+                [routerLinkActiveOptions]="{ exact: true }"
+              >
+                <ion-icon
+                  aria-hidden="true"
+                  slot="start"
+                  [ios]="p.icon + '-outline'"
+                  [md]="p.icon + '-sharp'"
+                ></ion-icon>
+                <ion-label>{{ p.title }}</ion-label>
+              </ion-item>
+
+              <!-- Nút Đăng xuất -->
+              <ion-item
+                *ngIf="p.title === 'Đăng xuất'"
+                (click)="logout()"
+                lines="none"
+                detail="false"
+              >
+                <ion-icon
+                  aria-hidden="true"
+                  slot="start"
+                  ios="log-out-outline"
+                  md="log-out-sharp"
+                ></ion-icon>
+                <ion-label>Đăng xuất</ion-label>
+              </ion-item>
+            </ion-menu-toggle>
+          </ion-list>
+
+          <div class="menu-footer">
+            <!-- Giới thiệu -->
+            <ion-item lines="none" (click)="navigateToAboutUs()">
+              <ion-icon slot="start" name="information-circle-outline"></ion-icon>
+              <ion-label>Giới thiệu</ion-label>
+            </ion-item>
+
+            <!-- Liên hệ -->
+            <ion-item lines="none" (click)="presentContactModal()">
+              <ion-icon slot="start" name="call-outline"></ion-icon>
+              <ion-label>Liên hệ</ion-label>
+            </ion-item>
+          </div>
+        </div>
+
+      </ion-content>
+    </ion-menu>
+
+    <!-- Phần nội dung chính -->
+    <ion-router-outlet id="main-content"></ion-router-outlet>
+
+  </ion-split-pane>
 </ion-app>

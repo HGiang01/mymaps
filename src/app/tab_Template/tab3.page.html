@@ -1,0 +1,40 @@
+<ion-header>
+  <div class="search-container">
+    <!-- mở/tắt cái menu -->
+    <ion-avatar class="menu-avatar" (click)="openMenu()">
+      <img src="assets/img/avatar.jpg" />
+    </ion-avatar>
+    <ion-searchbar
+      [(ngModel)]="searchQuery"
+      (ionInput)="onSearchChange($event)"
+      (ionClear)="clearSearch()"
+      placeholder="Tìm kiếm bản đồ..."
+      animated="true"
+      showCancelButton="focus">
+    </ion-searchbar>
+  </div>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+<!-- danh sách gợi ý -->
+  <ion-list *ngIf="showSuggestions && searchQuery" class="suggestions-list"> <!-- hiển thị danh sách khi thỏa cả 2 điều kiện -->
+    <ion-item *ngFor="let file of filteredFiles" button (click)="selectSuggestion(file)"> <!-- hiển thị danh sách những tài liệu thỏa từ khóa, khi chọn 1 tài liệu trong đó, sẽ gọi hàm selectSuggestion -->
+      <ion-icon name="map-outline" slot="start"></ion-icon>
+      <ion-label>
+        <h2>{{ file.map_name }}</h2>
+        <p>Owner: {{ file.user_name }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <!-- danh sách những tài liệu thỏa từ khóa tìm kiếm hiển thị trong phần content -->
+  <div class="documents-grid-container">
+    <app-file-card
+      *ngFor="let file of filteredFiles"
+      [file]="file">
+    </app-file-card>
+<!-- nếu filteredFiles.length = 0 nghĩa là không có tài liệu nào thỏa mãn từ khóa tìm kiếm -->
+    <p *ngIf="filteredFiles.length === 0">Không có tài liệu nào để hiển thị.</p>
+  </div>
+</ion-content>

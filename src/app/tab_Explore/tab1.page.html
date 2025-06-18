@@ -1,0 +1,26 @@
+<ion-header>
+  <div class="search-container">
+    <!-- mở/tắt cái menu -->
+    <ion-avatar class="menu-avatar" (click)="openMenu()">
+      <img src="assets/img/avatar.jpg" />
+    </ion-avatar>
+    <ion-searchbar
+      [(ngModel)]="searchQuery"
+      (ionInput)="onSearchChange($event)"
+      (ionClear)="clearSearch()"
+      placeholder="Tìm kiếm địa điểm..."
+      [animated]="true"
+      [debounce]="500">
+    </ion-searchbar>
+  </div>
+  <ion-list *ngIf="searchResults.length > 0" class="search-results">
+    <ion-item *ngFor="let result of searchResults" (click)="selectLocation(result)" button>
+      <ion-icon name="location-outline" slot="start"></ion-icon>
+      <ion-label>{{ result.display_name }}</ion-label>
+    </ion-item>
+  </ion-list>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div id="map" style="width: 100%; height: 100%;"></div>
+</ion-content>

@@ -1,0 +1,51 @@
+<div class="main-header">
+  <ion-card>
+    <form id="form" (ngSubmit)="onSubmit()" #form="ngForm">
+      <h1 class="form-title">ĐĂNG NHẬP</h1>
+
+      <!-- Tài khoản -->
+      <div class="input-control">
+        <label for="username">Tài khoản</label>
+        <input type="text" id="username" name="username" [(ngModel)]="username" required placeholder="Nhập tài khoản"/>
+        <div class="error" *ngIf="submitted && !username">Tài khoản không được để trống</div> 
+        <!-- Kiểm tra thử username xem có rỗng không !username -->
+      </div>
+
+      <!-- Mật khẩu -->
+      <div class="input-control" style="position: relative;">
+        <label for="password">Mật khẩu</label>
+        <input
+          id="password"
+          name="password"
+          [type]="showPassword ? 'text' : 'password'"
+          placeholder="Nhập mật khẩu"
+          [(ngModel)]="password"
+          required
+          style="padding-right: 40px;"
+        />
+        <ion-icon
+          name="{{ showPassword ? 'eye-off' : 'eye' }}"
+          style="position: absolute; right: 10px; top: 38px; font-size: 20px; cursor: pointer;"
+          (click)="togglePasswordVisibility()"
+        ></ion-icon>
+        <div class="error" *ngIf="submitted && !password">Mật khẩu không được để trống</div>
+      </div>
+
+
+      <!-- Nút Đăng nhập -->
+      <div class="signup-button">
+        <ion-button expand="block" type="submit">ĐĂNG NHẬP</ion-button>
+      </div>
+
+      <!-- Thông báo lỗi khác -->
+      <div *ngIf="loginError" class="error text-center" style="margin-top: 10px;">
+        {{ loginError }}
+      </div>
+
+      <!-- Link đăng ký -->
+      <div class="text-center">
+        <p>Bạn chưa có tài khoản? <a [routerLink]="['/register']">Đăng ký</a></p>
+      </div>
+    </form>
+  </ion-card>
+</div>
