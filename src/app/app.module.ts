@@ -7,13 +7,15 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
+
 import { AppComponent } from './app.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
-import { TokenExpiredModalComponent } from './components/token-expired-modal/token-expired-modal.component';
+// import { TokenExpiredModalComponent } from './components/token-expired-modal/token-expired-modal.component';
+import { BaseLayoutComponent } from './components/base-layout/base-layout.component';
 
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  declarations: [AppComponent],
+  declarations: [AppComponent, BaseLayoutComponent],
   imports: [
     BrowserModule, 
     IonicModule.forRoot(), 
@@ -22,7 +24,7 @@ import { TokenExpiredModalComponent } from './components/token-expired-modal/tok
     FormsModule,     
     IonicModule,      
     HttpClientModule,
-    TokenExpiredModalComponent
+    // TokenExpiredModalComponent
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

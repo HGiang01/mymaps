@@ -11,16 +11,16 @@ export class AuthInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // Kiểm tra token trước khi gửi request
     if (this.authService.getIsLoggedIn() && !this.authService.isTokenValid()) {
-      // Token hết hạn, xử lý logout
-      this.authService.handleTokenExpiration();
+      // Token hết hạn, chỉ phát sự kiện
+      this.authService.notifyTokenExpired();
       return throwError(() => new Error('Token đã hết hạn'));
     }
 
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401 || error.status === 403) {
-          // Token không hợp lệ hoặc hết hạn
-          this.authService.handleTokenExpiration();
+          // Token không hợp lệ hoặc hết hạn, chỉ phát sự kiện
+          this.authService.notifyTokenExpired();
         }
         return throwError(() => error);
       })

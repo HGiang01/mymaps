@@ -3,8 +3,18 @@
 
 // Điều chỉnh margin-bottom cho mymaps-file-card
 .file-card-container {
-  margin-bottom: 16px;
+  margin-bottom: 12px; // giống template, hoặc có thể bỏ nếu đã có trong global.scss
 }
+
+// Vị trí cho cụm nút
+.file-card-action {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 
 // nút xóa
 .delete-map-btn {

@@ -46,6 +46,7 @@
   padding: 1rem;
 //   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 
+  // style cho card của form đăng nhập
   ion-card {
     width: 100%;
     max-width: 350px;
@@ -58,6 +59,7 @@
   }
 }
 
+// style cho title của form đăng nhập
 .auth-form-title {
   text-align: center;
   font-size: 1.5rem;
@@ -81,6 +83,7 @@
   }
 }
 
+// style cho input email và password
 .auth-input-control {
   margin-bottom: 1.5rem;
 
@@ -144,7 +147,7 @@
   }
 }
 
-// Password input container with toggle button
+// style cho input password
 .password-input-container {
   position: relative;
   display: flex;
@@ -257,7 +260,7 @@
   }
 }
 
-// Mobile optimizations
+// Mobile 
 @media (max-width: 480px) {
   .auth-form-container {
     padding: 0.75rem;
@@ -336,7 +339,7 @@
   }
 }
 
-// Tablet optimizations
+// 
 @media (min-width: 481px) and (max-width: 768px) {
   .auth-form-container {
     padding: 1rem;
@@ -362,7 +365,7 @@
   }
 }
 
-// Desktop optimizations
+// Desktop 
 @media (min-width: 769px) {
   .auth-form-container {
     padding: 1.5rem;
@@ -473,29 +476,32 @@
     }
   }
 }
+/* ===== FILE CARDS STYLES ===== */
 
-// Shared styles for file cards
+//style cho file-card và mymaps-file-card
 .file-card-container {
-  background-color: rgb(239, 240, 222);
-  border-radius: 8px;
-  padding: 16px 24px 16px 16px;
-  margin-bottom: 10px;
   display: flex;
-  position: relative;
-  border: 2px solid #d7d7d7;
+  flex-direction: row;
   align-items: flex-start;
-  min-height: unset;
-  height: auto;
+  min-width: 0;
+  min-height: 90px;
   box-sizing: border-box;
+  position: relative;
+  background: rgb(239, 240, 222);
+  border-radius: 8px;
+  border: 2px solid #d7d7d7;
+  margin-bottom: 12px;
+  padding: 16px 24px 16px 16px;
   width: 100%;
+  gap: 0;
 }
 
 .map-box {
   width: 75px;
   height: 75px;
-  background-color: rgb(103, 96, 96);
-  border: 2px solid #d7d7d7;
+  background: #676060;
   border-radius: 5px;
+  border: 2px solid #d7d7d7;
   margin-right: 18px;
   flex-shrink: 0;
   display: flex;
@@ -505,13 +511,11 @@
 }
 
 .file-info {
-  flex: 1;
+  flex: 1 1 0%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  height: auto;
-  min-height: unset;
-  padding-right: 0;
   overflow: hidden;
 }
 
@@ -556,48 +560,56 @@
   }
 }
 
-.file-card-actions {
-  position: absolute;
-  top: 50%;
-  right: 16px;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: row;
-  gap: 12px;
-  z-index: 2;
-}
+// .file-card-actions {
+//   position: absolute;
+//   top: 50%;
+//   right: 16px;
+//   transform: translateY(-50%);
+//   display: flex;
+//   flex-direction: row;
+//   gap: 12px;
+//   z-index: 2;
+// }
 
 @media (max-width: 600px) {
   .file-card-container {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 10px 10px 10px 10px;
+    flex-direction: row;
+    align-items: center;
+    padding: 14px 10px 14px 10px;
     min-width: 0;
+    min-height: 90px;
+    gap: 0;
+    border-radius: 10px;
+    margin-bottom: 14px;
   }
   .map-box {
     width: 60px;
     height: 60px;
-    margin-right: 0;
-    margin-bottom: 8px;
+    margin-right: 14px;
+    margin-bottom: 0;
     align-self: center;
   }
   .file-info {
     padding-right: 0;
     min-width: 0;
+    font-size: 15px;
   }
-  .file-card-actions {
-    position: static;
-    transform: none;
-    flex-direction: row;
-    justify-content: flex-end;
-    margin-top: 8px;
-    margin-bottom: 0;
-  }
+  // .file-card-actions {
+  //   position: static;
+  //   transform: none;
+  //   flex-direction: row;
+  //   justify-content: flex-end;
+  //   align-items: center;
+  //   margin-top: 0;
+  //   margin-bottom: 0;
+  //   gap: 10px;
+  //   min-width: 60px;
+  // }
   .title-section h3 {
-    font-size: 1em;
-    -webkit-line-clamp: 1;
+    font-size: 1.08em;
+    -webkit-line-clamp: 2;
   }
   .details-section p {
-    font-size: 12px;
+    font-size: 13px;
   }
 }
