@@ -7,6 +7,7 @@ import { DocumentService } from '../services/document.service';
 import { Subscription } from 'rxjs';
 import { TabLabels } from '../tab-labels';
 import { MapService } from '../services/map.service';
+import { AuthService } from '../services/auth.service';
 
 interface SearchResult {
   display_name: string;
@@ -29,22 +30,28 @@ export class Tab1Page implements OnInit, OnDestroy, AfterViewInit {
   private CORS_PROXY = 'https://corsproxy.io/?'; // dòng này để tránh lỗi CORS thông qua proxy
   private currentTileLayer!: L.TileLayer; // tạo biến currentTileLayer, kiểu L.TileLayer, dảm bảo không phải null hoặc undefined
   private isTerrainMode: boolean = false;
+  private pointMarkers: L.Marker[] = []; //mảng chứa tất cả marker đang hiển thị
+  private mapIdSub?: Subscription;
+
+
   searchQuery: string = '';
   searchResults: any[] = [];
   selectedMapId: number | null = null; // id của map đã chọn từ template
   selectedMapName: string = ''; // Tên của map đang được chọn
-  private pointMarkers: L.Marker[] = []; //mảng chứa tất cả marker đang hiển thị
-  private mapIdSub?: Subscription;
   selectedGeom: string | null = null;
   showPointForm = false;
   loadingPoint = false;
+
+  private ownedMapIds: number[] = [];
+  private currentUserId: string | null = null;
 
   //khởi tạo menu
   constructor(
     private menuCtrl: MenuController,
     private mapShareService: MapShareService,
     private documentService: DocumentService,
-    private mapService: MapService
+    private mapService: MapService,
+    private authService: AuthService
   ) {}
   ngAfterViewInit() {
     this.initMap();
@@ -54,6 +61,13 @@ export class Tab1Page implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
+    this.currentUserId = this.authService.getUserId();
+    this.mapService.getMaps().subscribe((maps: any[]) => {
+      // Lưu lại danh sách map_id mà user sở hữu
+      this.ownedMapIds = maps
+        .filter(map => map.user_id == this.currentUserId)
+        .map(map => Number(map.map_id));
+    });
     this.mapIdSub = this.mapShareService.currentMapId$.subscribe((id) => {
       if (id) {
         this.selectedMapId = id;
@@ -238,7 +252,11 @@ export class Tab1Page implements OnInit, OnDestroy, AfterViewInit {
         // Không làm gì khi chưa chọn map
         return;
       }
-      
+      // Chỉ cho phép tạo điểm nếu map này thuộc sở hữu của user
+      if (!this.ownedMapIds.includes(Number(this.selectedMapId))) {
+        // Có thể hiển thị thông báo: "Bạn chỉ có thể tạo điểm trên bản đồ của mình."
+        return;
+      }
       const lat = e.latlng.lat;
       const lon = e.latlng.lng;
       this.selectedGeom = lon + ' ' + lat;
@@ -370,8 +388,10 @@ export class Tab1Page implements OnInit, OnDestroy, AfterViewInit {
     this.pointMarkers = [];
   }
 
+  // hàm tạo điểm mới
   onSubmitPoint(data: any) {
-    if (!this.selectedMapId || !this.selectedGeom) return;
+    // Chỉ cho phép tạo điểm nếu map này thuộc sở hữu của user
+    if (!this.selectedMapId || !this.selectedGeom || !this.ownedMapIds.includes(Number(this.selectedMapId))) return;
     this.loadingPoint = true;
     this.mapService.createPoint(this.selectedMapId.toString(), {
       map_id: this.selectedMapId.toString(),
@@ -412,6 +432,7 @@ export class Tab1Page implements OnInit, OnDestroy, AfterViewInit {
       },
       error: () => {
         this.loadingPoint = false;
+        
         // Có thể hiển thị thông báo lỗi
       }
     });

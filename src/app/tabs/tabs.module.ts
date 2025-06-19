@@ -6,14 +6,17 @@ import { FormsModule } from '@angular/forms';
 import { TabsPageRoutingModule } from './tabs-routing.module';
 
 import { TabsPage } from './tabs.page';
+import { TokenExpiredModalComponent } from '../components/token-expired-modal/token-expired-modal.component';
 
 @NgModule({
+  declarations: [TabsPage, TokenExpiredModalComponent],
   imports: [
     IonicModule,
     CommonModule,
     FormsModule,
     TabsPageRoutingModule,
-    TabsPage
+    // TabsPage,
+    // TokenExpiredModalComponent
   ],
 })
 export class TabsPageModule {}

@@ -87,9 +87,15 @@ export class AuthService {
 
   // Xử lý khi token hết hạn
   handleTokenExpiration(): void {
-    console.log('Token đã hết hạn, đăng xuất người dùng');
-    this.logout();
-    this.tokenExpiredSubject.next(true);
+    console.log('Token đã hết hạn');
+    this.notifyTokenExpired();
+  }
+
+  // Phát sự kiện token hết hạn (chỉ khi đã đăng nhập)
+  notifyTokenExpired(): void {
+    if (this.getIsLoggedIn()) {
+      this.tokenExpiredSubject.next(true);
+    }
   }
 
   // Reset trạng thái token expired
