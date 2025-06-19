@@ -1,0 +1,36 @@
+<ion-header translucent >
+  <ion-toolbar>
+    <ion-title class="ion-text-center">ĐÁNH GIÁ ỨNG DỤNG</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">ĐÓNG</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" [fullscreen]="true">
+  <ion-card class="feedback-card">
+    <ion-card-content class="ion-text-center">
+      <h2>Đánh giá mức độ hài lòng của bạn!</h2>
+
+      <!-- Sao -->
+      <div class="star-rating">
+        <ion-icon
+          *ngFor="let star of [1,2,3,4,5]"
+          [name]="star <= rating ? 'star' : 'star-outline'"
+          color="warning"
+          size="large"
+          (click)="setRating(star)">
+        </ion-icon>
+      </div>
+
+      <!-- Nhập nội dung -->
+      <ion-item lines="none">
+        <ion-label position="stacked">Nhập nội dung</ion-label>
+        <ion-textarea [(ngModel)]="feedbackText" placeholder="Nhập nội dung phản hồi của bạn vào đây..."></ion-textarea>
+      </ion-item>
+
+      <!-- Nút gửi -->
+      <ion-button expand="block" color="success" (click)="submitFeedback()">GỬI</ion-button>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

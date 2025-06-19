@@ -1,43 +1,60 @@
 <ion-app>
   <ion-menu menuId="main-menu" contentId="main-content" type="overlay">
     <ion-content>
-      <ion-list id="inbox-list">
-        <!-- Thông tin người dùng -->
-        <ion-item lines="none">
-          <!-- avatar -->
-          <ion-avatar slot="start">
-            <img [src]="avatarUrl || 'assets/img/avatar.jpg'" alt="avatar">
-          </ion-avatar>
+      <div class="menu-content">
 
-          <!-- tên người dùng -->
-          <ion-label>
-            <h2>{{ username }}</h2>
-          </ion-label>
-        </ion-item>
-        <!-- Danh sách các mục trong menu -->
-        <!-- cài đặt -->
-        <ion-item button (click)="goToSettings()">
-          <ion-icon name="settings-outline" slot="start"></ion-icon>
-          <ion-label>Cài đặt</ion-label>
-        </ion-item>
-        <!-- đăng xuất -->
-        <ion-item button (click)="logout()">
-          <ion-icon name="log-out-outline" slot="start"></ion-icon>
-          <ion-label>Đăng xuất</ion-label>
-        </ion-item>
-        <!-- Nút ở cuối menu -->
+        <!-- Phần danh sách chính -->
+        <ion-list id="inbox-list">
+          <!-- Thông tin người dùng -->
+          <ion-item lines="none">
+            <!-- avatar -->
+            <ion-avatar slot="start">
+              <img [src]="avatarUrl || 'assets/img/avatar.jpg'" alt="avatar">
+            </ion-avatar>
+            <!-- tên người dùng -->
+            <ion-label>
+              <h2>{{ username }}</h2>
+            </ion-label>
+          </ion-item>
+
+          <!-- Danh sách các mục trong menu -->
+          <!-- cài đặt -->
+          <ion-item button (click)="goToSettings()" lines="none" >
+            <ion-icon name="settings-outline" slot="start"></ion-icon>
+            <ion-label>Cài đặt</ion-label>
+          </ion-item>
+
+          <!-- Đăng xuất -->
+          <ion-item button (click)="logout()" lines="none" >
+            <ion-icon name="log-out-outline" slot="start"></ion-icon>
+            <ion-label>Đăng xuất</ion-label>
+          </ion-item>
+        </ion-list>
+
+        <!-- Các nút ở dưới cùng -->
         <div class="menu-bottom-buttons">
-          <ion-item button (click)="goToAboutUs()">
+          <!-- Thông tin -->
+          <ion-item button (click)="goToAboutUs()" lines="none" >
             <ion-icon name="information-circle-outline" slot="start"></ion-icon>
             <ion-label>Nhóm 8 nè</ion-label>
           </ion-item>
-          <ion-item button>
+
+          <!-- Liên hệ -->
+          <ion-item button (click)="goToContact()" lines="none" >
             <ion-icon name="call-outline" slot="start"></ion-icon>
             <ion-label>Liên hệ</ion-label>
           </ion-item>
+
+          <!-- Feedback! -->
+          <ion-item button (click)="openFeedback()" lines="none" >
+            <ion-icon name="chatbubbles-outline" slot="start"></ion-icon>
+            <ion-label>Phản hồi</ion-label>
+          </ion-item>
         </div>
-      </ion-list>
+
+      </div>
     </ion-content>
   </ion-menu>
+
   <ion-router-outlet id="main-content"></ion-router-outlet>
 </ion-app>

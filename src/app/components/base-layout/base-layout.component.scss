@@ -1,3 +1,4 @@
+/* Avatar có thể click được */
 .custom-avatar {
   width: 40px;
   height: 40px;
@@ -21,33 +22,45 @@
   }
 }
 
+/* Thanh công cụ gọn gàng */
 ion-toolbar {
-    --border-width: 0;
-    --box-shadow: none !important;
-    display: flex;
-    align-items: center;
-  }
+  --border-width: 0;
+  --box-shadow: none !important;
+  display: flex;
+  align-items: center;
+}
 
+/* Tùy chỉnh thanh tìm kiếm */
 .custom-searchbar {
-    --border-radius: 20px;
-    --color: #000;
-    --placeholder-color: #666;
-    --icon-color: #666;
-    margin: 0 8px;
-  }
+  --border-radius: 20px;
+  --color: #000;
+  --placeholder-color: #666;
+  --icon-color: #666;
+  margin: 0 8px;
+}
 
-ion-content {
+/* ⚠️ KHÔNG áp dụng flex trực tiếp lên ion-content nữa */
+/* Thay vào đó, dùng .menu-content bên trong */
+
+.menu-content {
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
+/* Danh sách chính chiếm toàn bộ không gian còn lại */
 #inbox-list {
-  flex: 1 1 auto;
+  flex: 1;
+  overflow-y: auto;
 }
 
+/* Phần nút dưới cùng menu */
 .menu-bottom-buttons {
   flex-shrink: 0;
   margin-bottom: 16px;
+  padding-top: 8px;
 }
 
+ion-item ion-icon[slot="start"] {
+  margin-left: 6px; /* hoặc giá trị bạn muốn, ví dụ 4px, 12px... */
+}

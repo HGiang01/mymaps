@@ -613,3 +613,12 @@
     font-size: 13px;
   }
 }
+
+  .my-feedback-modal::part(content) {
+  max-width: 500px !important;      // ✅ Chiều rộng mong muốn
+  width: 100% !important;
+  max-height: 380px !important;     // ✅ Chiều cao giới hạn
+  margin: auto !important;
+  border-radius: 16px;
+  padding: 0 !important;
+}
