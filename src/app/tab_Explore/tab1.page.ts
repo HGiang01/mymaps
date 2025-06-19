@@ -38,6 +38,9 @@ export class Tab1Page implements OnInit, OnDestroy, AfterViewInit {
   selectedGeom: string | null = null;
   showPointForm = false;
   loadingPoint = false;
+  private createPointMode: boolean = false; // chế độ tạo điểm
+  private createdMarker: L.Marker | null = null; // marker duy nhất được tạo
+  private routeControl: any = null; // control để hiển thị đường đi
 
   //khởi tạo menu
   constructor(
@@ -230,8 +233,14 @@ export class Tab1Page implements OnInit, OnDestroy, AfterViewInit {
       'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       {}
     ).addTo(this.map);
+
+    this.map.on('click', (e: L.LeafletMouseEvent) => { //lắng nghe sự kiện click từ chuột
+      this.onMapClick(e); // và chạy hàm onmapclick
+    });
+
     this.addLocationControl();
     this.addTerrainControl();
+    this.addCreatePointControl();
     // Thêm sự kiện click trên bản đồ để tạo điểm mới
     this.map.on('click', (e: any) => {
       if (!this.selectedMapId) {
@@ -299,6 +308,11 @@ export class Tab1Page implements OnInit, OnDestroy, AfterViewInit {
               iconSize: [25, 40],
             }),
           }).addTo(this.map);
+
+          // Nếu có điểm đã tạo và không ở chế độ tạo điểm - > chạy hàm showRouteToDesination để vẽ đường đi
+          if (this.createdMarker && !this.createPointMode) {
+            this.showRouteToDestination([latitude, longitude]);
+          }
         },
         (error) => {
           console.error('Lỗi khi lấy vị trí:', error);
@@ -445,6 +459,128 @@ export class Tab1Page implements OnInit, OnDestroy, AfterViewInit {
     this.selectedMapId = null;
     this.selectedMapName = '';
     this.clearPointMarkers();
+  }
+
+  private onMapClick(e: L.LeafletMouseEvent) {
+    if (this.createPointMode) {
+      this.createMarker(e.latlng); //thuộc tính e.latlng được cấp từ thư viện leaflet cấp tọa độ điểm được chọn
+    }
+  }
+
+  // Hàm Tạo marker mới
+  private createMarker(latlng: L.LatLng) {
+    // Xóa marker cũ nếu có
+    if (this.createdMarker) {
+      this.map.removeLayer(this.createdMarker);
+    }
+
+    // Xóa route cũ nếu có
+    if (this.routeControl) {
+      this.map.removeLayer(this.routeControl);
+      this.routeControl = null;
+    }
+
+    const marker = L.marker(latlng, { //tạo marker với latlon tại điểm được chọn được cấp từ hàm onmapclick 
+      icon: L.icon({
+        iconUrl: '../assets/icon/location-icon.png',
+        iconSize: [40, 40],
+      }),
+    }).addTo(this.map);
+
+    this.createdMarker = marker;
+  }
+
+  // Thêm nút điều khiển tạo điểm
+  private addCreatePointControl(): void {
+    const createPointButton = L.Control.extend({ //tạo nút mới đặt ở trên cùng bên phải
+      options: {
+        position: 'topright',
+      },
+      onAdd: (map: L.Map) => { //trực sử dụng và chỉnh sửa html,css cho nút mới
+        const btn = L.DomUtil.create('button', 'create-point-button');
+        btn.innerHTML = '<img src="../assets/icon/location-icon.png" alt="Create Point Icon" class="create-point-icon">';
+        btn.style.width = '35px';
+        btn.style.height = '35px';
+        btn.style.backgroundColor = 'white';
+        btn.style.border = '5px solid rgba(255, 255, 255, 0.2)';
+        btn.style.borderRadius = '4px';
+        btn.title = 'Tạo điểm mới';
+        btn.id = 'create-point-btn';
+
+        btn.addEventListener('click', (event) => {
+          event.stopPropagation(); // Ngăn chặn sự kiện click lan truyền xuống bản đồ
+          this.toggleCreatePointMode();
+        });
+
+        return btn;
+      },
+    });
+
+    new createPointButton().addTo(this.map);
+  }
+
+  // Bật/tắt chế độ tạo điểm
+  private toggleCreatePointMode(): void {
+    this.createPointMode = !this.createPointMode; // đổi true thành flase và ngược lại
+    
+    const btn = document.getElementById('create-point-btn'); // tìm kiếm trong DOM btn có id create-point-btn là cái vừa tạo ở trên
+    if (btn) {
+      if (this.createPointMode) {
+        btn.style.backgroundColor = 'rgb(169, 204, 112)';
+        btn.style.color = 'white';
+        btn.title = 'Tắt chế độ tạo điểm';
+      } else {
+        btn.style.backgroundColor = 'white';
+        btn.style.color = 'black';
+        btn.title = 'Tạo điểm mới';
+      }
+    }
+  }
+
+  // Xóa marker đã tạo
+  private clearCreatedMarker(): void {
+    if (this.createdMarker) {
+      this.map.removeLayer(this.createdMarker);
+      this.createdMarker = null;
+    }
+  }
+
+  // Hiển thị đường đi đến điểm đích
+  private showRouteToDestination(currentLocation: [number, number]): void {
+    if (!this.createdMarker) return; // kiểm tra điểm đã chọn hiện tại
+
+    const destination = this.createdMarker.getLatLng(); // lấy tọa độ của điểm đã chọn
+    
+    // Xóa route cũ nếu có
+    if (this.routeControl) {
+      this.map.removeLayer(this.routeControl);
+      this.routeControl = null;
+    }
+
+    // lấy OSRM API tạo đường đi
+    const routeUrl = `https://router.project-osrm.org/route/v1/driving/${currentLocation[1]},${currentLocation[0]};${destination.lng},${destination.lat}?overview=full&geometries=geojson`;
+    
+    fetch(routeUrl) //gửi yêu cầu api
+      .then(response => response.json()) // xử lý dữ liệu trả về
+      .then(data => {
+        if (data.routes && data.routes.length > 0) {
+          const route = data.routes[0]; // gắn đường đầu tiên trong mảng những đường đến đích, thường là đường ngắn nhất
+          const routeCoordinates = route.geometry.coordinates.map((coord: number[]) => [coord[1], coord[0]]);// chuyển đổi định đang của tọa độ để dùng cho leaflet
+          
+          // Vẽ đường đi
+          const routeLine = L.polyline(routeCoordinates, {
+            color: 'red',
+            weight: 2,
+          }).addTo(this.map);
+
+
+          // Lưu route để có thể xóa sau
+          this.routeControl = routeLine;
+        }
+      })
+      .catch(error => {
+        console.error('Lỗi khi lấy đường đi:', error);
+      });
   }
 }
 
