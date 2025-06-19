@@ -68,7 +68,7 @@ export class Tab1Page implements OnInit, OnDestroy, AfterViewInit {
               const marker = L.marker([latlng.lat, latlng.lon], {
                 icon: L.icon({
                   iconUrl: '../assets/icon/location-icon.png',
-                  iconSize: [25, 40],
+                  iconSize: [40, 40],
                 }),
               }).addTo(this.map).bindPopup(`
                   <div style="display: flex; align-items: flex-start; width: 280px; padding: 8px;">
@@ -296,7 +296,7 @@ export class Tab1Page implements OnInit, OnDestroy, AfterViewInit {
           this.currentLocationMarker = L.marker([latitude, longitude], {
             icon: L.icon({
               iconUrl: '../assets/icon/current-location.png',
-              iconSize: [25, 40],
+              iconSize: [40, 40],
             }),
           }).addTo(this.map);
         },
@@ -395,9 +395,11 @@ export class Tab1Page implements OnInit, OnDestroy, AfterViewInit {
                 const marker = L.marker([latlng.lat, latlng.lon], {
                   icon: L.icon({
                     iconUrl: '../assets/icon/location-icon.png',
-                    iconSize: [25, 40],
+                    iconSize: [40, 40],
                   }),
-                }).addTo(this.map).bindPopup(point.name);
+                })
+                  .addTo(this.map)
+                  .bindPopup(point.name);
                 this.pointMarkers.push(marker);
                 if (!minPoint || point.point_id < minPoint.point_id) {
                   minPoint = { ...point, ...latlng };
