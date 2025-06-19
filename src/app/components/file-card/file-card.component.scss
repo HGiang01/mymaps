@@ -3,7 +3,7 @@
 
 // Điều chỉnh margin-bottom cho file-card
 .file-card-container {
-  margin-bottom: -10px;
+  margin-bottom: -10px; //để tránh hiện thị 2 lần
 }
 
 //nút download
@@ -22,7 +22,7 @@
   color:#51a245
 }
 
-.like-dislike-group {
+.file-card-action {
   position: absolute;
   bottom: 12px;
   right: 12px;
@@ -31,7 +31,7 @@
   gap: 8px;
 }
 
-.like-dislike-group button:active {
+.file-card-action button:active {
   transform: scale(1.1); /* hiệu ứng phóng to nhẹ */
   transition: transform 0.1s ease;
   border: 2px solid #d7d7d7;

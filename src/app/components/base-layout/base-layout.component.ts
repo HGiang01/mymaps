@@ -5,10 +5,10 @@ import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-base-layout',
-  standalone: true,
+  standalone: false,
   templateUrl: './base-layout.component.html',
   styleUrls: ['./base-layout.component.scss'],
-  imports: [IonicModule]
+  // imports: [IonicModule]
 })
 
 export class BaseLayoutComponent implements OnInit {

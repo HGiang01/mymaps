@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -9,10 +9,10 @@ import { AuthService } from '../../services/auth.service';
   selector: 'app-token-expired-modal',
   templateUrl: './token-expired-modal.component.html',
   styleUrls: ['./token-expired-modal.component.scss'],
-  standalone: true,
-  imports: [CommonModule, IonicModule]
+  standalone: false,
+  // imports: [CommonModule, IonicModule]
 })
-export class TokenExpiredModalComponent implements OnInit, OnDestroy {
+export class TokenExpiredModalComponent implements OnDestroy {
   showModal = false;
   private tokenExpiredSubscription: Subscription;
 
@@ -22,18 +22,10 @@ export class TokenExpiredModalComponent implements OnInit, OnDestroy {
   ) {
     this.tokenExpiredSubscription = this.authService.tokenExpired$.subscribe(
       (expired) => {
-        if (expired) {
-          this.showModal = true;
-        }
+        // Chỉ hiển thị modal nếu đã đăng nhập và token hết hạn
+        this.showModal = expired && this.authService.getIsLoggedIn();
       }
     );
-  }
-
-  ngOnInit() {
-    // Kiểm tra token khi component khởi tạo
-    if (this.authService.getIsLoggedIn() && !this.authService.isTokenValid()) {
-      this.showModal = true;
-    }
   }
 
   ngOnDestroy() {
