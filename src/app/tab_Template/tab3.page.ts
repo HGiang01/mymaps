@@ -24,7 +24,7 @@ export class Tab3Page {
     private authService: AuthService
   ) {}
 
-  ngOnInit() {
+  ionViewWillEnter() {
     this.loadMaps();
     // lấy dữ liệu từ API
     this.documentService.getAllDocumentsSummary().subscribe({
@@ -39,6 +39,8 @@ export class Tab3Page {
       }
     });
   }
+
+  ngOnInit() {}
 
   loadMaps() {
     const userId = this.authService.getUserId();
