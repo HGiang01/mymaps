@@ -12,6 +12,7 @@ export interface MapItem {
   category?: string;
   modified_at: string;
   user_id: string;
+  shared?: string | number;
 }
 
 export interface CreateMapRequest {

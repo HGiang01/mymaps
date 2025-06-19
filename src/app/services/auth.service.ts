@@ -88,6 +88,7 @@ export class AuthService {
   // Xử lý khi token hết hạn
   handleTokenExpiration(): void {
     console.log('Token đã hết hạn');
+    this.logout();
     this.notifyTokenExpired();
   }
 
@@ -181,7 +182,7 @@ export class AuthService {
       'Content-Type': 'application/x-www-form-urlencoded',
       'Accept': 'application/json'
     });
-
+    //Đăng nhập và lấy token
     return this.http.post(`${this.apiUrl}token`, body.toString(), { headers }).pipe(
       tap((response: any) => {
         if (response && response.access_token) {
@@ -195,7 +196,7 @@ export class AuthService {
             'Authorization': `Bearer ${response.access_token}`,
             'Accept': 'application/json'
           });
-
+          //Lấy thông tin người dùng từ API
           this.http.get<any>(`${this.apiUrl}users/me`, { headers: authHeaders }).subscribe({
             next: (res) => {
               localStorage.setItem('userId', res.user_id);
