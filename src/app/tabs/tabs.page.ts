@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { TabLabels } from '../tab-labels';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms'; 
+import { TokenExpiredModalComponent } from '../components/token-expired-modal/token-expired-modal.component';
 
 @Component({
   selector: 'app-tabs',
@@ -11,6 +12,7 @@ import { FormsModule } from '@angular/forms';
   imports: [
     IonicModule, 
     FormsModule, 
+    TokenExpiredModalComponent,
   ],
 })
 export class TabsPage {

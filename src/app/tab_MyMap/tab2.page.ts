@@ -14,10 +14,7 @@ import { Router } from '@angular/router';
   standalone: false,
 })
 export class Tab2Page implements OnInit {
-  files: DocumentSummary[] = [];
-  filteredFiles: DocumentSummary[] = [];
   searchQuery: string = '';
-  showSuggestions: boolean = false;
 
   segmentValue: string = 'all';
   maps: MapItem[] = [];           // Danh sách bản đồ gốc
@@ -148,29 +145,19 @@ export class Tab2Page implements OnInit {
   }
 
   onSearchChange(event: any) {
-    this.searchQuery = event.detail.value.toLowerCase();
-    this.showSuggestions = this.searchQuery.length > 0; // khi nhập từ khóa showSuggestions = true -> hiển thị danh sách gợi ý
-    // lọc kết quả tìm kiếm bằng tên của tài liệu hoặc tên chủ sở hữu tài liệu
-    this.filteredFiles = this.files.filter(file =>
-      file.map_name.toLowerCase().includes(this.searchQuery) ||
-      file.user_name.toLowerCase().includes(this.searchQuery)
-    );
+    const query = event.detail.value?.toLowerCase() || '';
+    if (query.length > 0) {
+      this.filteredMaps = this.maps.filter(map =>
+        map.name && map.name.toLowerCase().includes(query)
+      );
+    } else {
+      this.filteredMaps = [...this.maps];
+    }
   }
 
-// hàm chọn vào mục trong danh sách gợi ý
-// khi chọn, truyền vào file cấu trúc của tài liệu đã chọn
-// ẩn danh sách gợi ý(false) hiển thị tên tài liệu được chọn trong thanh tìm kiếm
-//  cô lập và hiển thị duy nhất(file) tài liệu được chọn vào phần content
-  selectSuggestion(file: DocumentSummary) {
-    this.searchQuery = file.map_name;
-    this.showSuggestions = false;
-    this.filteredFiles = [file];
-  }
-// xóa thành tìm kiếm và trả phần content về ban đầu
   clearSearch() {
     this.searchQuery = '';
-    this.showSuggestions = false;
-    this.filteredFiles = this.files;
+    this.filteredMaps = [...this.maps];
   }
   
   openMenu() {

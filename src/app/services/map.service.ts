@@ -121,4 +121,11 @@ export class MapService {
     const url = `https://mymaps-app.onrender.com/map/create_point?map_id=${mapID}`;
     return this.http.post(url, formData, { headers });
   }
+
+  // Xóa điểm trên bản đồ
+  deletePoint(pointId: string): Observable<any> {
+    const headers = this.getHeaders();
+    const url = `https://mymaps-app.onrender.com/map/delete_point?point_id=${pointId}`;
+    return this.http.delete(url, { headers });
+  }
 }

@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import * as L from 'leaflet';
 import 'ionicons';
-import { MenuController } from '@ionic/angular';
+import { MenuController, AlertController, LoadingController } from '@ionic/angular';
 import { MapShareService } from '../services/map-share.service';
 import { DocumentService } from '../services/document.service';
 import { Subscription } from 'rxjs';
@@ -40,7 +40,9 @@ export class Tab1Page implements OnInit, OnDestroy, AfterViewInit {
   private pointMarkers: L.Marker[] = []; //mảng chứa tất cả marker đang hiển thị
   private mapIdSub?: Subscription;
   loadingPoint = false;
+  loadingDelete = false; // Biến theo dõi trạng thái xóa điểm
   private routeControl: any = null; // control để hiển thị đường đi
+  private markerToDelete: L.Marker | null = null; // Marker đang được xóa
 
   // Getter để expose service ra template
   get pointFormServiceInstance() {
@@ -54,7 +56,9 @@ export class Tab1Page implements OnInit, OnDestroy, AfterViewInit {
     private documentService: DocumentService,
     private mapService: MapService,
     private pointFormService: PointFormService,
-    private authService: AuthService
+    private authService: AuthService,
+    private alertController: AlertController,
+    private loadingController: LoadingController
   ) {}
   ngAfterViewInit() {
     this.initMap();
@@ -560,6 +564,18 @@ export class Tab1Page implements OnInit, OnDestroy, AfterViewInit {
     points.forEach((point) => {
       const latlng = wkbHexToLatLng(point.geom);
       if (latlng) {
+        // Thêm thông tin latlng vào point object để sử dụng trong popup
+        point.latlng = latlng;
+        
+        // Debug: In ra cấu trúc dữ liệu điểm để kiểm tra
+        console.log('=== DEBUG POINT STRUCTURE ===');
+        console.log('Point data:', point);
+        console.log('Point ID field:', point.point_id || point.id || point.pointId);
+        console.log('Point name:', point.name);
+        console.log('Point description:', point.description);
+        console.log('Point image_url:', point.image_url);
+        console.log('=============================');
+        
         const marker = this.createPointMarker(point, latlng);
         this.pointMarkers.push(marker);
       }
@@ -576,51 +592,29 @@ export class Tab1Page implements OnInit, OnDestroy, AfterViewInit {
         iconUrl: '../assets/icon/location-icon.png',
         iconSize: [40, 40],
       }),
-    }).addTo(this.map);
-    // Xóa nút 'Dẫn đường tới đây' khỏi popup, chỉ còn thông tin điểm
-    marker.bindPopup(this.createPointPopupContent(point, false));
-    // Thêm sự kiện click marker để dẫn đường nếu đang bật chế độ
-    marker.on('click', (e: any) => {
-      if (this.isRoutingMode) {
-        // Lấy vị trí hiện tại của người dùng
-        if ('geolocation' in navigator) {
-          navigator.geolocation.getCurrentPosition(
-            (position) => {
-              const { latitude, longitude } = position.coords;
-              // Xóa route cũ nếu có
-              if (this.routeControl) {
-                this.map.removeLayer(this.routeControl);
-                this.routeControl = null;
-              }
-              // Xóa marker vị trí người dùng cũ nếu có
-              if (this.currentLocationMarker) {
-                this.map.removeLayer(this.currentLocationMarker);
-                this.currentLocationMarker = null;
-              }
-              // Tạo marker mới cho vị trí người dùng
-              this.currentLocationMarker = L.marker([latitude, longitude], {
-                icon: L.icon({
-                  iconUrl: '../assets/icon/current-location.png',
-                  iconSize: [40, 40],
-                }),
-              }).addTo(this.map);
-              // Vẽ đường đi từ vị trí hiện tại đến điểm này
-              this.drawRouteFromTo(
-                [latitude, longitude],
-                [latlng.lat, latlng.lon]
-              );
-            },
-            (error) => {
-              alert('Không lấy được vị trí hiện tại của bạn!');
+    }).addTo(this.map)
+      .bindPopup(this.createPointPopupContent(point));
+
+    // Lưu point data vào marker để backup method có thể sử dụng
+    (marker as any).pointData = point;
+
+    // Thêm sự kiện cho popup khi mở
+    marker.on('popupopen', (e: any) => {
+      setTimeout(() => {
+        // Xử lý nút xóa điểm
+        const deleteBtn = document.querySelector('.delete-btn');
+        if (deleteBtn) {
+          deleteBtn.addEventListener('click', () => {
+            const pointId = deleteBtn.getAttribute('data-point-id');
+            console.log('Delete button clicked with pointId:', pointId);
+            if (pointId) {
+              this.handleDeletePointClick(pointId, point, marker);
+            } else {
+              console.error('Không tìm thấy pointId trong button');
             }
-          );
-        } else {
-          alert('Trình duyệt không hỗ trợ định vị!');
+          });
         }
-        // Không mở popup khi đang ở chế độ dẫn đường
-        e.originalEvent.preventDefault();
-        e.originalEvent.stopPropagation();
-      }
+      }, 0);
     });
     return marker;
   }
@@ -642,6 +636,18 @@ export class Tab1Page implements OnInit, OnDestroy, AfterViewInit {
            onerror="this.onerror=null; this.src='../assets/default-image.png';"
            loading="lazy" />`
       : '';
+
+    // Lấy ID điểm từ nhiều trường có thể có
+    const pointId = point.point_id || point.id || point.pointId;
+    
+    // Kiểm tra quyền xóa điểm (chỉ chủ sở hữu map mới có quyền xóa)
+    const canDeletePoint = this.canDeletePoint(point);
+    const deleteButtonHtml = canDeletePoint && pointId
+      ? `<button class='delete-btn' style='padding: 6px 12px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 8px;' data-point-id='${pointId}'>
+           <ion-icon name="trash-outline" style="margin-right: 4px;"></ion-icon>
+           Xóa điểm
+         </button>`
+      : '';
     return `
       <div style="display: flex; align-items: flex-start; width: 280px; padding: 8px;">
         <div style="flex: 2; padding: 4px; max-width: 150px;">
@@ -655,6 +661,9 @@ export class Tab1Page implements OnInit, OnDestroy, AfterViewInit {
         <div style="flex: 1; min-width: 100px; max-width: 120px; height: 100px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
           ${imageHtml}
         </div>
+      </div>
+      <div style='margin-top: 8px; text-align: right;'>
+        ${deleteButtonHtml}
       </div>
     `;
   }
@@ -801,6 +810,158 @@ export class Tab1Page implements OnInit, OnDestroy, AfterViewInit {
         alert('Không thể lấy đường đi!');
         console.error('Lỗi khi lấy đường đi:', error);
       });
+  }
+
+  // Kiểm tra quyền xóa điểm
+  private canDeletePoint(point: any): boolean {
+    const currentUserId = this.authService.getUserId();
+    const currentUserIdString = String(currentUserId);
+    const mapOwnerIdString = String(this.selectedMapOwnerId);
+    const canDelete = currentUserIdString === mapOwnerIdString;
+
+    console.log('=== DEBUG CAN DELETE POINT ===');
+    console.log(
+      'Current User ID:',
+      currentUserId,
+      'Type:',
+      typeof currentUserId
+    );
+    console.log(
+      'Map Owner ID:',
+      this.selectedMapOwnerId,
+      'Type:',
+      typeof this.selectedMapOwnerId
+    );
+    console.log('Current User ID (string):', currentUserIdString);
+    console.log('Map Owner ID (string):', mapOwnerIdString);
+    console.log('Can Delete Point:', canDelete);
+    console.log('===============================');
+
+    return canDelete;
+  }
+
+  // Xử lý sự kiện click nút xóa điểm
+  private async handleDeletePointClick(pointId: string, point: any, marker?: L.Marker): Promise<void> {
+    // Debug: In ra thông tin điểm và ID
+    console.log('=== DEBUG DELETE POINT CLICK ===');
+    console.log('Point ID from button:', pointId);
+    console.log('Point data:', point);
+    console.log('Point ID from data:', point.point_id || point.id || point.pointId);
+    console.log('Marker to delete:', marker);
+    console.log('================================');
+    
+    // Lưu marker cần xóa
+    this.markerToDelete = marker || null;
+    
+    // Kiểm tra xem có ID hợp lệ không
+    if (!pointId) {
+      console.error('Không có ID điểm để xóa');
+      const errorAlert = await this.alertController.create({
+        header: 'Lỗi',
+        message: 'Không thể xác định ID điểm để xóa.',
+        buttons: ['OK']
+      });
+      await errorAlert.present();
+      return;
+    }
+
+    // Hiển thị dialog xác nhận xóa
+    const alert = await this.alertController.create({
+      header: 'Xác nhận xóa điểm',
+      message: `Bạn có chắc chắn muốn xóa điểm "${point.name}" không? Hành động này không thể hoàn tác.`,
+      buttons: [
+        {
+          text: 'Hủy',
+          role: 'cancel',
+          cssClass: 'secondary'
+        },
+        {
+          text: 'Xóa',
+          role: 'destructive',
+          handler: () => {
+            this.deletePoint(pointId, point);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  // Hàm xóa điểm
+  private async deletePoint(pointId: string, point: any): Promise<void> {
+    // Hiển thị loading spinner
+    const loading = await this.loadingController.create({
+      message: 'Đang xóa điểm...',
+      spinner: 'crescent'
+    });
+    await loading.present();
+
+    this.loadingDelete = true;
+
+    try {
+      // Sử dụng MapService để xóa điểm thay vì gọi HttpClient trực tiếp
+      const response = await this.mapService.deletePoint(pointId).toPromise();
+      
+      console.log('Xóa điểm thành công:', response);
+      
+      // Đóng loading
+      await loading.dismiss();
+      
+      // Xóa marker khỏi map ngay lập tức
+      if (this.markerToDelete) {
+        console.log('Xóa marker khỏi map:', this.markerToDelete);
+        this.map.removeLayer(this.markerToDelete);
+        
+        // Xóa marker khỏi mảng pointMarkers
+        const markerIndex = this.pointMarkers.indexOf(this.markerToDelete);
+        if (markerIndex > -1) {
+          this.pointMarkers.splice(markerIndex, 1);
+          console.log('Đã xóa marker khỏi mảng pointMarkers');
+        }
+        
+        // Reset markerToDelete
+        this.markerToDelete = null;
+      }
+      
+      // Hiển thị thông báo thành công
+      const successAlert = await this.alertController.create({
+        header: 'Thành công',
+        message: `Đã xóa điểm "${point.name}" thành công!`,
+        buttons: ['OK']
+      });
+      await successAlert.present();
+
+    } catch (error: any) {
+      console.error('Lỗi khi xóa điểm:', error);
+      
+      // Đóng loading
+      await loading.dismiss();
+      
+      // Reset markerToDelete nếu có lỗi
+      this.markerToDelete = null;
+      
+      // Kiểm tra loại lỗi để hiển thị thông báo phù hợp
+      let errorMessage = 'Không thể xóa điểm. Vui lòng thử lại sau.';
+      
+      if (error.status === 401 || error.status === 403) {
+        errorMessage = 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.';
+      } else if (error.status === 404) {
+        errorMessage = 'Không tìm thấy điểm cần xóa.';
+      } else if (error.status === 500) {
+        errorMessage = 'Lỗi server. Vui lòng thử lại sau.';
+      }
+      
+      // Hiển thị thông báo lỗi
+      const errorAlert = await this.alertController.create({
+        header: 'Lỗi',
+        message: errorMessage,
+        buttons: ['OK']
+      });
+      await errorAlert.present();
+    } finally {
+      this.loadingDelete = false;
+    }
   }
 
   // Thêm hàm tạo control bật/tắt chế độ dẫn đường

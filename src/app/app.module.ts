@@ -9,7 +9,6 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
-import { TokenExpiredModalComponent } from './components/token-expired-modal/token-expired-modal.component';
 
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -21,8 +20,7 @@ import { TokenExpiredModalComponent } from './components/token-expired-modal/tok
     CommonModule,
     FormsModule,     
     IonicModule,      
-    HttpClientModule,
-    TokenExpiredModalComponent
+    HttpClientModule
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

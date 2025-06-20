@@ -10,7 +10,6 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { register } from 'swiper/element/bundle';
-import { TokenExpiredModalComponent } from './components/token-expired-modal/token-expired-modal.component';
 
 register();
 @Component({

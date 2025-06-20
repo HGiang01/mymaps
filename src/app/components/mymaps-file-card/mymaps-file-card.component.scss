@@ -6,109 +6,63 @@
   margin-bottom: 16px;
 }
 
-// nút xóa
+/* 
+  Explanation: 
+  - Removing 'position: absolute' to place buttons back into the normal layout flow.
+  - This prevents them from overlapping other content.
+  - They will now be positioned by the flex container in global.scss.
+*/
+
+// Common style for action buttons
+.public-map-btn,
 .delete-map-btn {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    z-index: 2;
-    background: rgba(255, 255, 255, 0.95);
-    border: none;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+
+  &:hover {
+    transform: translateY(-1px);
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
 
-    &:hover {
-        background: #ff3b30;
-        box-shadow: 0 2px 8px rgba(255, 59, 48, 0.25);
-        
-        ion-icon {
-            color: white;
-        }
-    }
-
-    ion-icon {
-        font-size: 16px;
-        color: #ff3b30;
-    }
-
-    .delete-spinner {
-        width: 16px;
-        height: 16px;
-    }
+  ion-icon {
+    font-size: 18px;
+  }
 }
 
-// nút public
-.public-map-btn {
-    position: absolute;
-    top: 12px;
-    right: 52px;
-    z-index: 2;
-    background: rgba(255, 255, 255, 0.95);
-    border: none;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-
-    &:hover {
-        background: #007aff;
-        box-shadow: 0 2px 8px rgba(0, 122, 255, 0.25);
-        
-        ion-icon {
-            color: white;
-        }
-    }
-
-    ion-icon {
-        font-size: 16px;
-        color: #007aff;
-    }
-
-    .public-spinner {
-        width: 16px;
-        height: 16px;
-    }
+// Specific colors for button icons
+.public-map-btn ion-icon {
+  color: #007aff;
 }
 
-// Trạng thái public/private cho nút share
+.delete-map-btn ion-icon {
+  color: #ff3b30;
+}
+
+// Styling for the "shared" state
 .public-map-btn.shared {
-  background: #e0e0e0 !important;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  background: #f0f0f0;
   ion-icon {
-    color: #888 !important;
-  }
-}
-.public-map-btn.not-shared {
-  background: #fff !important;
-  ion-icon {
-    color: #007aff !important;
+    color: #888;
   }
 }
 
-// Thêm trạng thái disabled cho các nút
+// Styling for the disabled state
 .delete-map-btn[disabled],
 .public-map-btn[disabled] {
     opacity: 0.6;
     cursor: not-allowed;
     
     &:hover {
-        background: rgba(255, 255, 255, 0.95);
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        
-        ion-icon {
-            color: inherit;
-        }
+        transform: none;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
 } 

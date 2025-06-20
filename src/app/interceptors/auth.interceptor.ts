@@ -16,6 +16,18 @@ export class AuthInterceptor implements HttpInterceptor {
       return throwError(() => new Error('Token đã hết hạn'));
     }
 
+    // Tự động thêm token vào header nếu user đã đăng nhập
+    if (this.authService.getIsLoggedIn()) {
+      const token = this.authService.getAccessToken();
+      if (token) {
+        request = request.clone({
+          setHeaders: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+      }
+    }
+
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401 || error.status === 403) {
