@@ -37,9 +37,22 @@ const routes: Routes = [
       {
         path: 'profile',
         loadChildren: () => import('./pages/profile/profile.module').then( m => m.ProfilePageModule)
-      }
+      },
+      {
+        path: 'contact',
+        loadComponent: () => import('./pages/contact/contact.page').then(m => m.ContactPage)
+      },
+      {
+        path: 'feedback',
+        loadChildren: () => import('./pages/feedback/feedback.module').then( m => m.FeedbackPageModule)
+      },
     ]
-  }
+  },
+  {
+    path: 'about-us',
+    loadComponent: () => import('./components/about-us/about-us.component').then(m => m.AboutUsComponent)
+  },
+
 ];
 @NgModule({
   imports: [
