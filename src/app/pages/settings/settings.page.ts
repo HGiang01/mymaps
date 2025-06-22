@@ -62,7 +62,7 @@ export class SettingsPage {
     }
 
     try {
-      await this.http.delete(`https://mymaps-app.onrender.com/users/delete`, {
+      await this.http.delete(`https://mymaps-app-1.onrender.com/users/delete`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

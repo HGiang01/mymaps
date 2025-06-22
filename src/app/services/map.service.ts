@@ -35,8 +35,8 @@ export interface CreatePointRequest {
   providedIn: 'root'
 })
 export class MapService {
-  private apiMap = 'https://mymaps-app.onrender.com/map/mymaps';
-  private createMapUrl = 'https://mymaps-app.onrender.com/map/create_map';
+  private apiMap = 'https://mymaps-app-1.onrender.com/map/mymaps';
+  private createMapUrl = 'https://mymaps-app-1.onrender.com/map/create_map';
 
   // Khởi tạo service
   constructor(
@@ -91,21 +91,21 @@ export class MapService {
   // Xóa bản đồ
   deleteMap(mapId: string): Observable<any> {
     const headers = this.getHeaders();
-    const url = `https://mymaps-app.onrender.com/map/delete_map?map_id=${mapId}`;
+    const url = `https://mymaps-app-1.onrender.com/map/delete_map?map_id=${mapId}`;
     return this.http.delete(url, { headers });
   }
 
   // Thêm phương thức public map
   toPublicMap(mapId: string): Observable<any> {
     const headers = this.getHeaders();
-    const url = `https://mymaps-app.onrender.com/template/to_public?map_id=${mapId}`;
+    const url = `https://mymaps-app-1.onrender.com/template/to_public?map_id=${mapId}`;
     return this.http.post(url, { map_id: mapId }, { headers });
   }
 
   // Thêm phương thức chuyển map về private
   toPrivateMap(mapId: string): Observable<any> {
     const headers = this.getHeaders();
-    const url = `https://mymaps-app.onrender.com/template/to_private?map_id=${mapId}`;
+    const url = `https://mymaps-app-1.onrender.com/template/to_private?map_id=${mapId}`;
     return this.http.post(url, { map_id: mapId }, { headers });
   }
 
@@ -118,14 +118,14 @@ export class MapService {
     if (pointData.description) formData.append('description', pointData.description);
     if (pointData.image) formData.append('image', pointData.image);
     formData.append('geom', pointData.geom);
-    const url = `https://mymaps-app.onrender.com/map/create_point?map_id=${mapID}`;
+    const url = `https://mymaps-app-1.onrender.com/map/create_point?map_id=${mapID}`;
     return this.http.post(url, formData, { headers });
   }
 
   // Xóa điểm trên bản đồ
   deletePoint(pointId: string): Observable<any> {
     const headers = this.getHeaders();
-    const url = `https://mymaps-app.onrender.com/map/delete_point?point_id=${pointId}`;
+    const url = `https://mymaps-app-1.onrender.com/map/delete_point?point_id=${pointId}`;
     return this.http.delete(url, { headers });
   }
 }

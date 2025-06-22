@@ -33,7 +33,7 @@ export interface MapPoint {
 })
 export class DocumentService {
 // định nghĩa biến chứa url mockserver
-  private ApiUrl = 'https://mymaps-app.onrender.com/template';
+  private ApiUrl = 'https://mymaps-app-1.onrender.com/template';
   
 // khởi tạo httpclient và authservice
   constructor(private http: HttpClient, private authService: AuthService) { }
@@ -59,17 +59,17 @@ export class DocumentService {
   //hàm lấy thông tin user đang đăng nhập
   getCurrentUser(): Observable<any> {
     const headers = this.authService.getAuthHeaders();
-    return this.http.get<any>('https://mymaps-app.onrender.com/users/me', { headers });
+    return this.http.get<any>('https://mymaps-app-1.onrender.com/users/me', { headers });
   }
  // hàm lấy điểm trên bản đồ 
   getMapPoints(map_id: number): Observable<MapPoint[]> {
     const headers = this.authService.getAuthHeaders();
-    return this.http.get<MapPoint[]>(`https://mymaps-app.onrender.com/map/${map_id}`, { headers });
+    return this.http.get<MapPoint[]>(`https://mymaps-app-1.onrender.com/map/${map_id}`, { headers });
   }
 
   // Hàm đẩy map từ template qua mymaps
   importTemplate(map_id: number): Observable<any> {
     const headers = this.authService.getAuthHeaders();
-    return this.http.post<any>(`https://mymaps-app.onrender.com/template/import/${map_id}`, {}, { headers });
+    return this.http.post<any>(`https://mymaps-app-1.onrender.com/template/import/${map_id}`, {}, { headers });
   }
 }

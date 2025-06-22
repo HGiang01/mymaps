@@ -48,7 +48,7 @@ export class FeedbackPage {
     body.set('message', this.feedbackText);
 
     try {
-      await this.http.post('https://mymaps-app.onrender.com/user/feedback', body.toString(), { headers }).toPromise();
+      await this.http.post('https://mymaps-app-1.onrender.com/user/feedback', body.toString(), { headers }).toPromise();
 
       const alert = await this.alertCtrl.create({
         header: 'Thành công',

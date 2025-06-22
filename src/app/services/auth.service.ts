@@ -9,7 +9,7 @@ import { catchError } from 'rxjs/operators';
 })
 
 export class AuthService {
-  private apiUrl = 'https://mymaps-app.onrender.com/';
+  private apiUrl = 'https://mymaps-app-1.onrender.com/';
 
   //Trạng thái đăng nhập của loggedIn sẽ là false từ ban đầu khi chưa đăng nhập
   private loggedIn = new BehaviorSubject<boolean>(false);
